@@ -11,7 +11,7 @@
 #'
 #'
 #'
-#' @return list consisting of a non-numeric decision whether to reject the null hypothesis or not, the significance level, and the number of bootstrap samples used 
+#' @return list consisting of a non-numeric decision whether to reject the null hypothesis or not, the significance level, the number of bootstrap samples used, and the bootstrap P-value  calculated using the Euclidean distance.  
 #'
 #'
 #'
@@ -25,14 +25,14 @@
 #' @examples
 #'
 #'
-#' x1=sqrt(10)*runif(7, -sqrt(3), sqrt(3) )
-#' x2=sqrt(1)*runif(7, -sqrt(3), sqrt(3) )
-#' equa2vartest(x1,x2,0.05, 500)
+#' x1=sqrt(10)*runif(8, -sqrt(3), sqrt(3) )
+#' x2=sqrt(1)*runif(8, -sqrt(3), sqrt(3) )
+#' equa2vartest(x1,x2,0.05, 1000)
 #'
 #'
 #'
-#' x1=sqrt(1)*rexp(7)
-#' x2=sqrt(1)*rexp(7)
+#' x1=sqrt(1)*rexp(8)
+#' x2=sqrt(1)*rexp(8)
 #' equa2vartest(x1,x2,0.01, 1000)
 #'
 #'
@@ -82,11 +82,14 @@ equa2vartest=function(x1, x2, a, B){
   y<-y22[complete.cases(y22),]
   y<-(y[,1:(k+1)])/y[, ((k+1)+1):(2*(k+1))]
   avey<-colMeans(y)
-  y<-(y-matrix(rep(avey,length(y[,1])), nrow=length(y[,1]), byrow=T) )[,1]
+  ycntr<-(y-matrix(rep(avey,length(y[,1])), nrow=length(y[,1]), byrow=T) )
+  y<-ycntr[,1]
   y<- y[abs(y)<Inf]
   B2<-length(y)
   cval<- sort( abs(y), decreasing=T)[ceiling(B2*a) + 1]
   ts2<- c( (yy1/sqrt(vary1c)),(yy2/sqrt(vary2c)) )
   ind <- ifelse( sum( ifelse( ( abs(ts2) > rep( cval ,(k+1) ) ), 1, 0) ) >0,1,0 )
-  return(list(ifelse(ind==0,"Decision: Fail to Reject the Null", "Decision: Reject the Null"), Alpha=a, NumberOfBootSamples=B ) )
+  dum=ifelse( (abs(ycntr)>abs(ts2))==c("TRUE", "TRUE"), 1,0)
+  pval<-round((sum(apply(dum,1,sum)==2)+1)/B2,3)
+  return(list(ifelse(ind==0,"Decision: Fail to Reject the Null", "Decision: Reject the Null"), Alpha=a, NumberOfBootSamples=B, BootPvalue=pval ) )
 }

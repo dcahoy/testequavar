@@ -12,7 +12,7 @@
 #'
 #'
 #'
-#' @return list consisting of a non-numeric decision whether to reject the null hypothesis or not, the significance level, and the number of bootstrap samples used
+#' @return list consisting of a non-numeric decision whether to reject the null hypothesis or not, the significance level, the number of bootstrap samples used, and the bootstrap P-value  calculated using the Euclidean distance.
 #'
 #'
 #'
@@ -29,7 +29,7 @@
 #' x1=sqrt(10)*runif(10, -sqrt(3), sqrt(3) )
 #' x2=sqrt(1)*runif(10, -sqrt(3), sqrt(3) )
 #' x3=sqrt(1)*runif(10, -sqrt(3), sqrt(3) )
-#' equa3vartest(x1,x2,x3, a=0.05, B=500)
+#' equa3vartest(x1,x2,x3, a=0.05, B=1000)
 #'
 #'
 #' equa3vartest( rexp(10) ,rexp(10) ,rexp(10) ,  a=0.01, B=1000)
@@ -102,5 +102,9 @@ equa3vartest=function(x1, x2, x3, a, B){
   cval<- ys[r]
   ts2<- c( (yy1/sqrt(vary1c)),(yy2/sqrt(vary2c)),(yy3/sqrt(vary3c)) )
   ind <- ifelse( sum( ifelse( ( abs(ts2) > rep( cval ,(k+1) ) ), 1, 0)    ) >0,1,0 )
-  return(list(ifelse(ind==0,"Decision: Fail to Reject the Null", "Decision: Reject the Null"), Alpha=a, NumberOfBootSamples=B ) )
+  euclid <- function(a) sqrt(sum((a)^2))
+  dum=apply(y,1,euclid) 
+  dum2=euclid(ts2)
+  pval<-round((sum(dum>dum2)+1)/B1,3)
+  return(list(ifelse(ind==0,"Decision: Fail to Reject the Null", "Decision: Reject the Null"),  Alpha=a, NumberOfBootSamples=B,BootPvalue=pval ) )
 }

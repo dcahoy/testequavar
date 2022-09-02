@@ -38,5 +38,5 @@ equa3vartest( rexp(10) ,rexp(10) ,rexp(10) ,  a=0.01, B=1000)
 }
 \references{
 Cahoy, DO (2010), \emph{A Bootstrap Test For Equality Of Variances,} Computational Statistics & Data Analysis, 54(10), 2306-2316.
-\url{https://doi.org/10.1016/j.csda.2010.04.012}
+<doi:10.1016/j.csda.2010.04.012>
 }
